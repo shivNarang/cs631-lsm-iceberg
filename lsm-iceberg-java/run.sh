@@ -2,7 +2,12 @@
 # Usage: ./run.sh demo | inspect [table] [warehouse] [n] | bench [--flag value ...] | test
 set -euo pipefail
 cd "$(dirname "$0")"
-if [[ "${1:-}" == "test" ]]; then exec mvn -q test; fi
+if [[ "${1:-}" == "test" ]]; then
+  status=0; mvn -q test > target/test-output.txt 2>&1 || status=$?
+  grep -v "^WARNING" target/test-output.txt || true
+  grep -h "Tests run" target/surefire-reports/*.txt | sed "s/ -- in cs631.lsm./  /"
+  exit $status
+fi
 if [[ ! -f target/classpath.txt || pom.xml -nt target/classpath.txt ]]; then
   mvn -q dependency:build-classpath -Dmdep.outputFile=target/classpath.txt >/dev/null
 fi
