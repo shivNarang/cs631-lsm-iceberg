@@ -55,6 +55,7 @@ public class Demo {
     showGet(t, "user01234");   // older run; bloom filter skips the newer one
     showGet(t, "user99999");   // outside every run's key range
     showGet(t, "user00042a");  // inside the ranges, bloom filters say no
+    System.out.println("\nLookup stats for the 6 lookups above: " + t.stats());
 
     step("4. RANGE SCAN: k-way merge over MemTable + all runs");
     t.scan("user00040", "user00045").forEachRemaining(e -> System.out.println("  " + e.getKey() + " -> " + e.getValue()));
@@ -66,8 +67,10 @@ public class Demo {
     System.out.println("  replayed " + t2.recovered() + " WAL records; get(\"crash-b\") = \"" + t2.get("crash-b") + "\"");
 
     step("6. STATE");
-    t2.describe().forEach((k, v) -> System.out.println("  " + k + ": " + v));
+    t2.describe().forEach((k, v) -> {
+      if (!k.equals("lookupStats")) System.out.println("  " + k + ": " + v);
+    });
     t2.close();
-    System.out.println("\nInspect the Iceberg metadata tree with:\n  ./run.sh inspect demo.kv " + warehouse);
+    System.out.println("\nInspect the Iceberg metadata tree with:\n  ./run.sh inspect demo.kv \"" + warehouse + "\"");
   }
 }
