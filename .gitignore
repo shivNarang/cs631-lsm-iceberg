@@ -1,0 +1,7 @@
+.venv/
+warehouse/
+__pycache__/
+*.pyc
+.DS_Store
+lsm-iceberg-java/target/
+lsm-iceberg-java/warehouse/

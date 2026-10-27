@@ -1,0 +1,36 @@
+{
+  "config": {
+    "keys": 20000,
+    "updates": 40000,
+    "batch": 5000,
+    "lookups": 200,
+    "scans": 20,
+    "scan_width": 100,
+    "seed": 42
+  },
+  "lsm": {
+    "write_s": 0.62,
+    "write_ops_per_s": 97132,
+    "data_files": 11,
+    "table_bytes": 949183,
+    "get_p50_ms": 0.013,
+    "get_p95_ms": 0.736,
+    "get_mean_ms": 0.167,
+    "files_read_per_get": 0.86,
+    "runs_skipped_by_range_or_bloom_pct": 84.1,
+    "bloom_false_positives": 12,
+    "scan_p50_ms": 0.11
+  },
+  "vanilla": {
+    "write_s": 0.14,
+    "write_ops_per_s": 433397,
+    "data_files": 12,
+    "table_bytes": 770843,
+    "get_p50_ms": 16.092,
+    "get_p95_ms": 16.852,
+    "get_mean_ms": 16.207,
+    "files_read_per_get": 11.98,
+    "scan_p50_ms": 18.29
+  },
+  "answers_disagree": 0
+}

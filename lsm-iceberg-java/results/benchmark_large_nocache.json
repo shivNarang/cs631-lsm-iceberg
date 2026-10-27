@@ -1,0 +1,33 @@
+{
+  "config" : {
+    "warmup" : 200,
+    "batch" : 25000,
+    "updates" : 400000,
+    "seed" : 42,
+    "scan-width" : 100,
+    "scans" : 50,
+    "cache-blocks" : 0,
+    "keys" : 100000,
+    "lookups" : 500
+  },
+  "lsm" : {
+    "write_ops_per_s" : 140806,
+    "data_files" : 17,
+    "table_bytes" : 4656760,
+    "get_p50_ms" : 0.336,
+    "get_p95_ms" : 0.6,
+    "files_read_per_get" : 0.88,
+    "runs_skipped_pct" : 86.7,
+    "scan_p50_ms" : 4.89
+  },
+  "vanilla" : {
+    "write_ops_per_s" : 295967,
+    "data_files" : 20,
+    "table_bytes" : 3864224,
+    "get_p50_ms" : 132.692,
+    "get_p95_ms" : 165.713,
+    "files_read_per_get" : 19.99,
+    "scan_p50_ms" : 177.86
+  },
+  "answers_differ" : 0
+}

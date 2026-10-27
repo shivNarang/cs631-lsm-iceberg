@@ -1,0 +1,114 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>CS631 Checkpoint Report</title>
+<style>
+  @page { size: A4; margin: 13mm 15mm; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.36; color: #111; background: #fff; }
+  h1 { font-size: 15pt; margin: 0 0 2px; }
+  h2 { font-size: 11.3pt; margin: 11px 0 4px; border-bottom: 1px solid #999; padding-bottom: 2px; }
+  .sub { color: #444; margin-bottom: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 4px 0; }
+  th, td { border: 1px solid #aaa; padding: 2.5px 6px; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  ul { margin: 3px 0; padding-left: 18px; } li { margin: 1.5px 0; }
+  code { font-family: Menlo, monospace; font-size: 8.6pt; }
+  pre { font-family: Menlo, monospace; font-size: 8.2pt; background: #f4f4f4; padding: 6px 8px; margin: 4px 0; line-height: 1.3; }
+  .done { color: #11702e; font-weight: bold; } .part { color: #9a6200; font-weight: bold; } .todo { color: #8a1c1c; font-weight: bold; }
+  .small { font-size: 8.6pt; color: #333; }
+</style></head><body>
+
+<h1>LSM Tree Indexing in Apache Iceberg: Checkpoint Report</h1>
+<div class="sub">CS631: Implementation Techniques for Relational Database Systems</div>
+<table>
+  <tr><th>Team member</th><th>Roll number</th></tr>
+  <tr><td>Shiv Narang</td><td>23b1075</td></tr>
+  <tr><td>Kaushal Vijayvergiya</td><td>23b0901</td></tr>
+  <tr><td>Kritin Gupta</td><td>23b0948</td></tr>
+</table>
+
+<h2>1. Goal (recap)</h2>
+Iceberg skips files using per-file min/max column statistics. Under streaming upserts each micro-batch file
+covers almost the whole key space, so min/max pruning skips nothing and a point lookup reads every file.
+We add LSM-tree structure (write buffer, sorted runs, bloom filters, fence pointers, and later compaction) on
+top of Iceberg while keeping the table readable by any Iceberg engine.
+<b>Implementation:</b> Java 17 on the reference Apache Iceberg Java library (1.10), the same library Spark, Flink and Trino use.
+
+<h2>2. Progress summary (about 40% complete)</h2>
+<table>
+  <tr><th style="width:31%">Phase / task</th><th style="width:11%">Status</th><th>What we have</th></tr>
+  <tr><td>1. Architecture study and baseline</td><td class="done">Done</td>
+      <td>Studied the metadata tree (metadata.json → snapshots → manifest list → manifests → data files) and the Puffin spec.
+          Our <code>InspectMetadata</code> tool prints this tree with per-file key min/max and the attached Puffin index blobs.
+          Baseline: vanilla Iceberg table with micro-batch appends and normal Iceberg scans.</td></tr>
+  <tr><td>2. LSM data structure design</td><td class="done">Done</td>
+      <td>MemTable = skip list; sorted run (SSTable) = key-sorted Parquet file (row group = block) + Puffin index file;
+          versioned LSM level manifest (JSON) referenced from a table property.</td></tr>
+  <tr><td>3a. Write path</td><td class="done">Done</td>
+      <td>WAL (CRC-checked records) → MemTable → flush on size/count/time threshold → one atomic Iceberg commit.</td></tr>
+  <tr><td>3b. Read path</td><td class="done">Done</td>
+      <td>Point lookups and range scans across the MemTable and all runs; tombstones; LRU block cache.</td></tr>
+  <tr><td>3c. Compaction</td><td class="todo">Not started</td><td>Design done (Section 5).</td></tr>
+  <tr><td>4. Benchmarking</td><td class="part">Preliminary</td><td>YCSB-style micro-benchmark (Section 4). Full YCSB/TPC-H runs and write-amplification study still to do.</td></tr>
+  <tr><td>Testing</td><td class="done">10 JUnit tests pass</td>
+      <td>Randomised workloads checked against an in-memory model; data read by a plain Iceberg reader equals the LSM view; crash
+          recovery; index rebuild; bloom pruning; LSM and vanilla give identical answers.</td></tr>
+</table>
+
+<h2>3. How it works</h2>
+<b>Iceberg table schema:</b> <code>key string, value string, seq long, op int</code> (op 0 = put, 1 = delete), declared
+sort order <code>key ASC</code>. It is a normal Iceberg table, so Spark or Trino can read it. The current value of a key is the
+row with the highest <code>seq</code>.
+<ul>
+  <li><b>Write:</b> each put/delete gets a global sequence number, is appended to the WAL, then inserted into the skip-list
+      MemTable (newest version per key; deletes become tombstones).</li>
+  <li><b>Flush:</b> the MemTable is written as a key-sorted Parquet file (zstd) through Iceberg's Parquet writer. One Iceberg
+      <code>Transaction</code> then (a) <code>newAppend()</code> adds the run, with the snapshot summary tagged
+      <code>lsm.operation=flush, lsm.run-id, lsm.level, lsm.min/max-key</code>, and (b) <code>updateProperties()</code> moves
+      <code>lsm.manifest-location</code> to a new LSM level manifest. Either both happen or neither does. The run's <b>Puffin</b>
+      file (bloom filter blob at 1% FPR + fence-pointer blob) is then registered on that snapshot with
+      <code>updateStatistics()</code>, and the WAL is truncated.</li>
+  <li><b>Point lookup:</b> MemTable → L0 runs newest first. Per run: key-range check → bloom filter → binary search over fence
+      pointers → read exactly <i>one</i> Parquet row group. The first version found wins, and a tombstone means the key was deleted.</li>
+  <li><b>Range scan:</b> k-way heap merge of the MemTable and the overlapping row groups of each run, ordered by (key, −seq).</li>
+  <li><b>Recovery:</b> on open, WAL records with seq &gt; the committed <code>lastSeq</code> are replayed, so a crash between the
+      commit and the WAL truncation loses nothing. A torn last WAL record fails its CRC and is ignored, and a missing Puffin index is rebuilt from Parquet.</li>
+</ul>
+<pre>get("user01234") = "profile-v1-1182"          (actual trace from ./run.sh demo)
+    memtable: miss
+    run 3 (L0): bloom filter says NO -> skip
+    run 2 (L0): bloom MAYBE, fence pointer -> row group 4, found seq=1183</pre>
+
+<h2>4. Preliminary results</h2>
+Workload: keys loaded in random order, then skewed updates (10% deletes); both tables write a file every <i>B</i> writes. Then 500
+point lookups (80% existing keys, 20% missing) and range scans of 100 keys. Single laptop, local files, block cache off unless stated.
+<table>
+  <tr><th>Metric</th><th>LSM-Iceberg</th><th>Vanilla Iceberg</th></tr>
+  <tr><td colspan="3"><b>Small:</b> 20k keys + 40k updates, B = 5,000 (11–12 files)</td></tr>
+  <tr><td>Point lookup p50 / p95 (ms)</td><td class="n">0.33 / 0.64 &nbsp;(0.002 with 256-block cache)</td><td class="n">39.2 / 43.7</td></tr>
+  <tr><td>Range scan of 100 keys, p50 (ms)</td><td class="n">3.0</td><td class="n">43.9</td></tr>
+  <tr><td colspan="3"><b>Large:</b> 100k keys + 400k updates, B = 25,000 (17–20 files)</td></tr>
+  <tr><td>Point lookup p50 / p95 (ms)</td><td class="n">0.34 / 0.60</td><td class="n">132.7 / 165.7</td></tr>
+  <tr><td>Data files read per lookup</td><td class="n">0.88</td><td class="n">19.99 (all 20)</td></tr>
+  <tr><td>Range scan of 100 keys, p50 (ms)</td><td class="n">4.9</td><td class="n">177.9</td></tr>
+  <tr><td>Write throughput (ops/s)</td><td class="n">141,000</td><td class="n">296,000</td></tr>
+  <tr><td>Runs skipped by key range / bloom filter</td><td class="n">87%</td><td class="n">≈0% (min/max can't prune)</td></tr>
+</table>
+Both tables gave identical answers on every lookup. <b>Main finding:</b> vanilla lookup cost grows with the number of files
+(39 → 133 ms), while ours stays flat (~0.34 ms) because about one block is read per lookup.
+<span class="small">Caveats: vanilla latency includes Iceberg query planning (reading manifests) on every query. Our writes are
+~2× slower because of the per-record WAL append and the sort. Before compaction, the LSM read cost still grows slowly with the number of runs.</span>
+
+<h2>5. Remaining work (plan to final demo)</h2>
+<ul>
+  <li><b>Compaction (next):</b> leveled compaction with size ratio 10. Merge overlapping L0 runs into non-overlapping L1 runs, drop
+      shadowed versions, and purge tombstones at the last level. Commit with Iceberg's <code>newRewrite()</code> (delete old files and add new
+      ones atomically) together with the new LSM manifest. Run it as a background thread.</li>
+  <li>Spark integration: a resolved "latest value" view, and routing point lookups through our Puffin index.</li>
+  <li>Full evaluation: YCSB workloads A/B/C/E and a modified TPC-H; write latency, read latency, write amplification and file count
+      over time. Compare against vanilla Iceberg copy-on-write and merge-on-read (equality deletes).</li>
+  <li>Concurrent commits (retry on conflict); background flush on a separate thread.</li>
+</ul>
+<div class="small">Code: <code>lsm-iceberg-java/</code>: <code>LSMTable, MemTable, WriteAheadLog, BloomFilter, SortedRun, MergingIterator,
+VanillaIcebergTable</code>; tools <code>Demo, InspectMetadata, Benchmark</code>; JUnit tests. Stack: Java 17, Maven, Apache Iceberg 1.10,
+Parquet 1.16, Hadoop local FS catalog. (An earlier Python/PyIceberg prototype of the same design is kept for reference.)</div>
+</body></html>
