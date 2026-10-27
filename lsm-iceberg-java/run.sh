@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 if [[ "${1:-}" == "test" ]]; then
-  status=0; mvn -q test > target/test-output.txt 2>&1 || status=$?
+  mkdir -p target; status=0; mvn -q test > target/test-output.txt 2>&1 || status=$?
   grep -v "^WARNING" target/test-output.txt || true
   grep -h "Tests run" target/surefire-reports/*.txt | sed "s/ -- in cs631.lsm./  /"
   exit $status
