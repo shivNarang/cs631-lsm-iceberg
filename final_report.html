@@ -84,7 +84,7 @@ get(key) ─► MemTable ─► L0 runs, newest first ─► one run per level  
   <li><b>Range scans</b> k-way merge the memtable and the overlapping runs. <b>Crash recovery</b> replays log records
   newer than the last flushed sequence number.</li>
 </ul>
-<p>Iceberg (1.10) is used unmodified, only through its public Java API: catalog, transactions, append, rewrite,
+<p>Iceberg (1.10) is used unmodified: it is pulled from Maven Central as a library rather than copied into our repository, so the repository holds only our own code. We use it only through its public Java API: catalog, transactions, append, rewrite,
 table properties, snapshot summaries, Puffin and statistics files. About 3,400 lines of Java plus 400 lines of tests (19 automated tests).</p>
 
 <h2>3. Changes after the checkpoint feedback</h2>

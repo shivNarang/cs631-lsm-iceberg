@@ -6,3 +6,4 @@ __pycache__/
 lsm-iceberg-java/target/
 lsm-iceberg-java/warehouse/
 lsm-iceberg-java/spark/target/
+submission/
