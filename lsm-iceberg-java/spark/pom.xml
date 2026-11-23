@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>cs631</groupId>
+  <artifactId>lsm-iceberg-spark</artifactId>
+  <version>1.0.0</version>
+  <name>Spark SQL over an LSM-Iceberg table (CS631)</name>
+
+  <!-- Separate module: Spark ships its own Parquet/Avro/Hadoop versions, so it runs in its own JVM
+       and reads the table through the official Iceberg Spark runtime only. -->
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.12</artifactId>
+      <version>3.5.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.iceberg</groupId>
+      <artifactId>iceberg-spark-runtime-3.5_2.12</artifactId>
+      <version>1.10.0</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,33 +1,257 @@
 {
   "config" : {
-    "updates" : 40000,
-    "seed" : 42,
-    "scan-width" : 100,
-    "scans" : 50,
-    "cache-blocks" : 256,
-    "keys" : 20000,
-    "lookups" : 500,
-    "warmup" : 200,
-    "batch" : 5000
+    "keys" : "20000",
+    "updates" : "40000",
+    "batch" : "5000",
+    "lookups" : "300",
+    "scans" : "30",
+    "scan-width" : "100",
+    "ycsb-ops" : "2000",
+    "time-limit" : "5",
+    "samples" : "8",
+    "seed" : "42",
+    "cache-blocks" : "0",
+    "stores" : "lsm,append,mor,cow",
+    "out" : "benchmark"
   },
+  "user_bytes" : 1223833,
   "lsm" : {
-    "write_ops_per_s" : 32191,
+    "write_ops_per_s" : 32216,
+    "bytes_written" : 2484522,
+    "write_amplification" : 2.03,
+    "rows_written" : 89850,
+    "row_write_amplification" : 1.5,
+    "data_files" : 7,
+    "table_bytes_live" : 826207,
+    "table_dir_bytes" : 5194545,
+    "lookups_done" : 300,
+    "get_p50_ms" : 0.133,
+    "get_p95_ms" : 0.187,
+    "files_read_per_get" : 0.78,
+    "runs_skipped_pct" : 83.3,
+    "bloom_false_positive_block_reads" : 0,
+    "index_bytes" : 650664,
+    "levels" : "L0: 3 runs (11,114 entries) | L1: 4 runs (18,736 entries)",
+    "write_stats" : {
+      "writes" : 60000,
+      "userBytes" : 1223833,
+      "flushes" : 11,
+      "flushBytes" : 1397918,
+      "flushRows" : 51114,
+      "compactions" : 2,
+      "compactionBytesRead" : 1658315,
+      "compactionBytesWritten" : 1086604,
+      "compactionRowsWritten" : 38736,
+      "versionsDropped" : 20000,
+      "tombstonesDropped" : 1264,
+      "compactionSeconds" : 0.32,
+      "writeAmplification" : 2.03
+    },
+    "scan_p50_ms" : 0.51,
+    "ycsb_ops_per_s" : {
+      "A" : 6168,
+      "B" : 7151,
+      "C" : 11905,
+      "E" : 5443
+    },
+    "curve" : [ {
+      "writes" : 7500,
+      "data_files" : 1,
+      "get_mean_ms" : 0.691
+    }, {
+      "writes" : 15000,
+      "data_files" : 3,
+      "get_mean_ms" : 1.45
+    }, {
+      "writes" : 22500,
+      "data_files" : 4,
+      "get_mean_ms" : 0.244
+    }, {
+      "writes" : 30000,
+      "data_files" : 5,
+      "get_mean_ms" : 0.175
+    }, {
+      "writes" : 37500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.302
+    }, {
+      "writes" : 45000,
+      "data_files" : 7,
+      "get_mean_ms" : 0.108
+    }, {
+      "writes" : 52500,
+      "data_files" : 5,
+      "get_mean_ms" : 0.236
+    }, {
+      "writes" : 60000,
+      "data_files" : 6,
+      "get_mean_ms" : 0.113
+    } ],
+    "answers_differ" : "0 / 300"
+  },
+  "append" : {
+    "write_ops_per_s" : 40550,
+    "bytes_written" : 334724,
+    "write_amplification" : 0.27,
+    "rows_written" : 51114,
+    "row_write_amplification" : 0.85,
     "data_files" : 11,
-    "table_bytes" : 879106,
-    "get_p50_ms" : 0.002,
-    "get_p95_ms" : 0.004,
-    "files_read_per_get" : 0.86,
-    "runs_skipped_pct" : 83.7,
-    "scan_p50_ms" : 0.06
+    "table_bytes_live" : 334724,
+    "table_dir_bytes" : 539957,
+    "lookups_done" : 141,
+    "get_p50_ms" : 35.395,
+    "get_p95_ms" : 37.328,
+    "files_read_per_get" : 10.99,
+    "scan_p50_ms" : 35.85,
+    "ycsb_ops_per_s" : {
+      "A" : 58,
+      "B" : 30,
+      "C" : 27,
+      "E" : 28
+    },
+    "curve" : [ {
+      "writes" : 7500,
+      "data_files" : 1,
+      "get_mean_ms" : 5.26
+    }, {
+      "writes" : 15000,
+      "data_files" : 3,
+      "get_mean_ms" : 29.383
+    }, {
+      "writes" : 22500,
+      "data_files" : 4,
+      "get_mean_ms" : 30.106
+    }, {
+      "writes" : 30000,
+      "data_files" : 5,
+      "get_mean_ms" : 31.454
+    }, {
+      "writes" : 37500,
+      "data_files" : 6,
+      "get_mean_ms" : 32.095
+    }, {
+      "writes" : 45000,
+      "data_files" : 7,
+      "get_mean_ms" : 33.677
+    }, {
+      "writes" : 52500,
+      "data_files" : 9,
+      "get_mean_ms" : 34.552
+    }, {
+      "writes" : 60000,
+      "data_files" : 10,
+      "get_mean_ms" : 37.186
+    } ],
+    "answers_differ" : "0 / 141"
   },
-  "vanilla" : {
-    "write_ops_per_s" : 63662,
-    "data_files" : 12,
-    "table_bytes" : 626562,
-    "get_p50_ms" : 39.201,
-    "get_p95_ms" : 43.954,
-    "files_read_per_get" : 11.97,
-    "scan_p50_ms" : 44.56
+  "mor" : {
+    "write_ops_per_s" : 41825,
+    "bytes_written" : 469606,
+    "write_amplification" : 0.38,
+    "rows_written" : 99199,
+    "row_write_amplification" : 1.65,
+    "data_files" : 11,
+    "table_bytes_live" : 454324,
+    "table_dir_bytes" : 760321,
+    "lookups_done" : 23,
+    "get_p50_ms" : 221.347,
+    "get_p95_ms" : 225.697,
+    "files_read_per_get" : 65.52,
+    "scan_p50_ms" : 222.16,
+    "ycsb_ops_per_s" : {
+      "A" : 12,
+      "B" : 5,
+      "C" : 4,
+      "E" : 4
+    },
+    "curve" : [ {
+      "writes" : 7500,
+      "data_files" : 1,
+      "get_mean_ms" : 2.387
+    }, {
+      "writes" : 15000,
+      "data_files" : 3,
+      "get_mean_ms" : 82.284
+    }, {
+      "writes" : 22500,
+      "data_files" : 4,
+      "get_mean_ms" : 98.003
+    }, {
+      "writes" : 30000,
+      "data_files" : 5,
+      "get_mean_ms" : 113.898
+    }, {
+      "writes" : 37500,
+      "data_files" : 6,
+      "get_mean_ms" : 129.751
+    }, {
+      "writes" : 45000,
+      "data_files" : 7,
+      "get_mean_ms" : 148.745
+    }, {
+      "writes" : 52500,
+      "data_files" : 9,
+      "get_mean_ms" : 179.555
+    }, {
+      "writes" : 60000,
+      "data_files" : 10,
+      "get_mean_ms" : 203.11
+    } ],
+    "answers_differ" : "0 / 23"
   },
-  "answers_differ" : 0
+  "cow" : {
+    "write_ops_per_s" : 42930,
+    "bytes_written" : 1091968,
+    "write_amplification" : 0.89,
+    "rows_written" : 181959,
+    "row_write_amplification" : 3.03,
+    "data_files" : 4,
+    "table_bytes_live" : 120960,
+    "table_dir_bytes" : 1374834,
+    "lookups_done" : 177,
+    "get_p50_ms" : 28.145,
+    "get_p95_ms" : 30.567,
+    "files_read_per_get" : 1.0,
+    "scan_p50_ms" : 28.62,
+    "ycsb_ops_per_s" : {
+      "A" : 72,
+      "B" : 38,
+      "C" : 36,
+      "E" : 37
+    },
+    "curve" : [ {
+      "writes" : 7500,
+      "data_files" : 1,
+      "get_mean_ms" : 1.654
+    }, {
+      "writes" : 15000,
+      "data_files" : 3,
+      "get_mean_ms" : 27.389
+    }, {
+      "writes" : 22500,
+      "data_files" : 4,
+      "get_mean_ms" : 27.658
+    }, {
+      "writes" : 30000,
+      "data_files" : 4,
+      "get_mean_ms" : 26.655
+    }, {
+      "writes" : 37500,
+      "data_files" : 4,
+      "get_mean_ms" : 26.822
+    }, {
+      "writes" : 45000,
+      "data_files" : 4,
+      "get_mean_ms" : 27.672
+    }, {
+      "writes" : 52500,
+      "data_files" : 4,
+      "get_mean_ms" : 27.307
+    }, {
+      "writes" : 60000,
+      "data_files" : 4,
+      "get_mean_ms" : 27.23
+    } ],
+    "answers_differ" : "0 / 177"
+  }
 }

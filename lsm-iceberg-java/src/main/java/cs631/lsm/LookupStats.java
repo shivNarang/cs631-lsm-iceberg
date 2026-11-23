@@ -10,12 +10,14 @@ public class LookupStats {
   public long runsChecked;
   public long rangePruned;
   public long bloomPruned;
+  /** bloom filter said maybe, but the key index said the key isn't in the run (no block read). */
+  public long indexPruned;
   public long bloomFalsePositives;
   public long blocksRead;
   public long blockCacheHits;
 
   public void reset() {
-    gets = memtableHits = runsChecked = rangePruned = bloomPruned = bloomFalsePositives = blocksRead = blockCacheHits = 0;
+    gets = memtableHits = runsChecked = rangePruned = bloomPruned = indexPruned = bloomFalsePositives = blocksRead = blockCacheHits = 0;
   }
 
   public Map<String, Long> asMap() {
@@ -25,6 +27,7 @@ public class LookupStats {
     m.put("runsChecked", runsChecked);
     m.put("rangePruned", rangePruned);
     m.put("bloomPruned", bloomPruned);
+    m.put("indexPruned", indexPruned);
     m.put("bloomFalsePositives", bloomFalsePositives);
     m.put("blocksRead", blocksRead);
     m.put("blockCacheHits", blockCacheHits);

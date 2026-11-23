@@ -5,3 +5,4 @@ __pycache__/
 .DS_Store
 lsm-iceberg-java/target/
 lsm-iceberg-java/warehouse/
+lsm-iceberg-java/spark/target/

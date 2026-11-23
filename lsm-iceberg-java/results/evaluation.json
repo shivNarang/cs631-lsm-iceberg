@@ -1,0 +1,479 @@
+{
+  "config" : {
+    "keys" : "100000",
+    "updates" : "400000",
+    "batch" : "25000",
+    "lookups" : "500",
+    "scans" : "50",
+    "scan-width" : "100",
+    "ycsb-ops" : "20000",
+    "time-limit" : "20",
+    "samples" : "8",
+    "seed" : "42",
+    "cache-blocks" : "0",
+    "stores" : "lsm,lsm-parquet,lsm-fence,lsm-nocompact,append,mor,cow",
+    "out" : "evaluation"
+  },
+  "user_bytes" : 10489621,
+  "lsm" : {
+    "write_ops_per_s" : 131089,
+    "bytes_written" : 22323605,
+    "write_amplification" : 2.13,
+    "rows_written" : 787030,
+    "row_write_amplification" : 1.57,
+    "data_files" : 5,
+    "table_bytes_live" : 2937722,
+    "table_dir_bytes" : 49317911,
+    "lookups_done" : 500,
+    "get_p50_ms" : 0.139,
+    "get_p95_ms" : 0.194,
+    "files_read_per_get" : 0.75,
+    "runs_skipped_pct" : 83.0,
+    "bloom_false_positive_block_reads" : 0,
+    "index_bytes" : 3072755,
+    "levels" : "L0: 1 runs (11,170 entries) | L1: 4 runs (90,689 entries)",
+    "write_stats" : {
+      "writes" : 500000,
+      "userBytes" : 10489621,
+      "flushes" : 17,
+      "flushBytes" : 11498114,
+      "flushRows" : 411170,
+      "compactions" : 4,
+      "compactionBytesRead" : 19385883,
+      "compactionBytesWritten" : 10825491,
+      "compactionRowsWritten" : 375860,
+      "versionsDropped" : 290118,
+      "tombstonesDropped" : 19193,
+      "compactionSeconds" : 0.77,
+      "writeAmplification" : 2.13
+    },
+    "scan_p50_ms" : 0.3,
+    "ycsb_ops_per_s" : {
+      "A" : 27518,
+      "B" : 12796,
+      "C" : 11215,
+      "E" : 2284
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 0.912
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.193
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.388
+    }, {
+      "writes" : 250000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.149
+    }, {
+      "writes" : 312500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.12
+    }, {
+      "writes" : 375000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.124
+    }, {
+      "writes" : 437500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.118
+    }, {
+      "writes" : 500000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.121
+    } ],
+    "answers_differ" : "0 / 500"
+  },
+  "lsm-parquet" : {
+    "write_ops_per_s" : 109920,
+    "bytes_written" : 5922973,
+    "write_amplification" : 0.56,
+    "rows_written" : 787030,
+    "row_write_amplification" : 1.57,
+    "data_files" : 5,
+    "table_bytes_live" : 831795,
+    "table_dir_bytes" : 32965707,
+    "lookups_done" : 500,
+    "get_p50_ms" : 0.276,
+    "get_p95_ms" : 0.313,
+    "files_read_per_get" : 0.75,
+    "runs_skipped_pct" : 83.0,
+    "bloom_false_positive_block_reads" : 0,
+    "index_bytes" : 3072979,
+    "levels" : "L0: 1 runs (11,170 entries) | L1: 4 runs (90,689 entries)",
+    "write_stats" : {
+      "writes" : 500000,
+      "userBytes" : 10489621,
+      "flushes" : 17,
+      "flushBytes" : 3252529,
+      "flushRows" : 411170,
+      "compactions" : 4,
+      "compactionBytesRead" : 5091178,
+      "compactionBytesWritten" : 2670444,
+      "compactionRowsWritten" : 375860,
+      "versionsDropped" : 290118,
+      "tombstonesDropped" : 19193,
+      "compactionSeconds" : 1.05,
+      "writeAmplification" : 0.56
+    },
+    "scan_p50_ms" : 0.56,
+    "ycsb_ops_per_s" : {
+      "A" : 16450,
+      "B" : 6426,
+      "C" : 5242,
+      "E" : 1105
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 1.582
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.765
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.611
+    }, {
+      "writes" : 250000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.791
+    }, {
+      "writes" : 312500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.337
+    }, {
+      "writes" : 375000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.683
+    }, {
+      "writes" : 437500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.463
+    }, {
+      "writes" : 500000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.656
+    } ],
+    "answers_differ" : "0 / 500"
+  },
+  "lsm-fence" : {
+    "write_ops_per_s" : 159917,
+    "bytes_written" : 22323605,
+    "write_amplification" : 2.13,
+    "rows_written" : 787030,
+    "row_write_amplification" : 1.57,
+    "data_files" : 5,
+    "table_bytes_live" : 2937722,
+    "table_dir_bytes" : 49343523,
+    "lookups_done" : 500,
+    "get_p50_ms" : 0.132,
+    "get_p95_ms" : 0.173,
+    "files_read_per_get" : 0.76,
+    "runs_skipped_pct" : 82.8,
+    "bloom_false_positive_block_reads" : 6,
+    "index_bytes" : 3072755,
+    "levels" : "L0: 1 runs (11,170 entries) | L1: 4 runs (90,689 entries)",
+    "write_stats" : {
+      "writes" : 500000,
+      "userBytes" : 10489621,
+      "flushes" : 17,
+      "flushBytes" : 11498114,
+      "flushRows" : 411170,
+      "compactions" : 4,
+      "compactionBytesRead" : 19385883,
+      "compactionBytesWritten" : 10825491,
+      "compactionRowsWritten" : 375860,
+      "versionsDropped" : 290118,
+      "tombstonesDropped" : 19193,
+      "compactionSeconds" : 0.6,
+      "writeAmplification" : 2.13
+    },
+    "scan_p50_ms" : 0.26,
+    "ycsb_ops_per_s" : {
+      "A" : 28850,
+      "B" : 8897,
+      "C" : 6933,
+      "E" : 2097
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 0.094
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.108
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.127
+    }, {
+      "writes" : 250000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.115
+    }, {
+      "writes" : 312500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.102
+    }, {
+      "writes" : 375000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.104
+    }, {
+      "writes" : 437500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.104
+    }, {
+      "writes" : 500000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.094
+    } ],
+    "answers_differ" : "0 / 500"
+  },
+  "lsm-nocompact" : {
+    "write_ops_per_s" : 200783,
+    "bytes_written" : 11498114,
+    "write_amplification" : 1.1,
+    "rows_written" : 411170,
+    "row_write_amplification" : 0.82,
+    "data_files" : 17,
+    "table_bytes_live" : 11498114,
+    "table_dir_bytes" : 25881863,
+    "lookups_done" : 500,
+    "get_p50_ms" : 0.132,
+    "get_p95_ms" : 0.146,
+    "files_read_per_get" : 0.81,
+    "runs_skipped_pct" : 87.7,
+    "bloom_false_positive_block_reads" : 0,
+    "index_bytes" : 13278255,
+    "levels" : "L0: 17 runs (411,170 entries)",
+    "write_stats" : {
+      "writes" : 500000,
+      "userBytes" : 10489621,
+      "flushes" : 17,
+      "flushBytes" : 11498114,
+      "flushRows" : 411170,
+      "compactions" : 0,
+      "compactionBytesRead" : 0,
+      "compactionBytesWritten" : 0,
+      "compactionRowsWritten" : 0,
+      "versionsDropped" : 0,
+      "tombstonesDropped" : 0,
+      "compactionSeconds" : 0.0,
+      "writeAmplification" : 1.1
+    },
+    "scan_p50_ms" : 2.39,
+    "ycsb_ops_per_s" : {
+      "A" : 27449,
+      "B" : 11562,
+      "C" : 10241,
+      "E" : 381
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 0.084
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 0.087
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 0.09
+    }, {
+      "writes" : 250000,
+      "data_files" : 8,
+      "get_mean_ms" : 0.106
+    }, {
+      "writes" : 312500,
+      "data_files" : 10,
+      "get_mean_ms" : 0.1
+    }, {
+      "writes" : 375000,
+      "data_files" : 12,
+      "get_mean_ms" : 0.112
+    }, {
+      "writes" : 437500,
+      "data_files" : 14,
+      "get_mean_ms" : 0.117
+    }, {
+      "writes" : 500000,
+      "data_files" : 16,
+      "get_mean_ms" : 0.105
+    } ],
+    "answers_differ" : "0 / 500"
+  },
+  "append" : {
+    "write_ops_per_s" : 346564,
+    "bytes_written" : 2616694,
+    "write_amplification" : 0.25,
+    "rows_written" : 411170,
+    "row_write_amplification" : 0.82,
+    "data_files" : 17,
+    "table_bytes_live" : 2616694,
+    "table_dir_bytes" : 2985083,
+    "lookups_done" : 263,
+    "get_p50_ms" : 75.816,
+    "get_p95_ms" : 79.493,
+    "files_read_per_get" : 16.99,
+    "scan_p50_ms" : 77.93,
+    "ycsb_ops_per_s" : {
+      "A" : 28,
+      "B" : 14,
+      "C" : 13,
+      "E" : 13
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 34.375
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 39.438
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 45.254
+    }, {
+      "writes" : 250000,
+      "data_files" : 8,
+      "get_mean_ms" : 50.941
+    }, {
+      "writes" : 312500,
+      "data_files" : 10,
+      "get_mean_ms" : 58.14
+    }, {
+      "writes" : 375000,
+      "data_files" : 12,
+      "get_mean_ms" : 63.155
+    }, {
+      "writes" : 437500,
+      "data_files" : 14,
+      "get_mean_ms" : 69.211
+    }, {
+      "writes" : 500000,
+      "data_files" : 16,
+      "get_mean_ms" : 75.219
+    } ],
+    "answers_differ" : "0 / 263"
+  },
+  "mor" : {
+    "write_ops_per_s" : 209463,
+    "bytes_written" : 3780004,
+    "write_amplification" : 0.36,
+    "rows_written" : 791430,
+    "row_write_amplification" : 1.58,
+    "data_files" : 17,
+    "table_bytes_live" : 3695877,
+    "table_dir_bytes" : 4284955,
+    "lookups_done" : 25,
+    "get_p50_ms" : 796.877,
+    "get_p95_ms" : 891.093,
+    "files_read_per_get" : 153.0,
+    "scan_p50_ms" : 796.55,
+    "ycsb_ops_per_s" : {
+      "A" : 3,
+      "B" : 1,
+      "C" : 1,
+      "E" : 1
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 72.719
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 117.049
+    }, {
+      "writes" : 187500,
+      "data_files" : 6,
+      "get_mean_ms" : 187.213
+    }, {
+      "writes" : 250000,
+      "data_files" : 8,
+      "get_mean_ms" : 266.66
+    }, {
+      "writes" : 312500,
+      "data_files" : 10,
+      "get_mean_ms" : 353.754
+    }, {
+      "writes" : 375000,
+      "data_files" : 12,
+      "get_mean_ms" : 473.635
+    }, {
+      "writes" : 437500,
+      "data_files" : 14,
+      "get_mean_ms" : 623.948
+    }, {
+      "writes" : 500000,
+      "data_files" : 16,
+      "get_mean_ms" : 769.102
+    } ],
+    "answers_differ" : "0 / 25"
+  },
+  "cow" : {
+    "write_ops_per_s" : 145902,
+    "bytes_written" : 10196049,
+    "write_amplification" : 0.97,
+    "rows_written" : 1454880,
+    "row_write_amplification" : 2.91,
+    "data_files" : 4,
+    "table_bytes_live" : 706359,
+    "table_dir_bytes" : 10689796,
+    "lookups_done" : 500,
+    "get_p50_ms" : 30.709,
+    "get_p95_ms" : 33.85,
+    "files_read_per_get" : 1.0,
+    "scan_p50_ms" : 30.24,
+    "ycsb_ops_per_s" : {
+      "A" : 65,
+      "B" : 34,
+      "C" : 32,
+      "E" : 34
+    },
+    "curve" : [ {
+      "writes" : 62500,
+      "data_files" : 2,
+      "get_mean_ms" : 30.623
+    }, {
+      "writes" : 125000,
+      "data_files" : 4,
+      "get_mean_ms" : 29.62
+    }, {
+      "writes" : 187500,
+      "data_files" : 4,
+      "get_mean_ms" : 30.075
+    }, {
+      "writes" : 250000,
+      "data_files" : 4,
+      "get_mean_ms" : 29.136
+    }, {
+      "writes" : 312500,
+      "data_files" : 4,
+      "get_mean_ms" : 29.618
+    }, {
+      "writes" : 375000,
+      "data_files" : 4,
+      "get_mean_ms" : 30.462
+    }, {
+      "writes" : 437500,
+      "data_files" : 4,
+      "get_mean_ms" : 29.204
+    }, {
+      "writes" : 500000,
+      "data_files" : 4,
+      "get_mean_ms" : 29.677
+    } ],
+    "answers_differ" : "0 / 500"
+  }
+}

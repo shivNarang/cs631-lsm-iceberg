@@ -34,6 +34,10 @@ public final class KvSchema {
 
   /** Write rows (already in the desired order) to one Parquet file and describe it as an Iceberg DataFile. */
   public static DataFile writeParquet(OutputFile out, List<KeyValue> rows, long rowGroupBytes, SortOrder sortOrder) {
+    return writeParquet(out, rows, rowGroupBytes, "zstd", sortOrder);
+  }
+
+  public static DataFile writeParquet(OutputFile out, List<KeyValue> rows, long rowGroupBytes, String codec, SortOrder sortOrder) {
     GenericRecord template = GenericRecord.create(SCHEMA);
     FileAppender<Record> appender;
     try {
@@ -42,7 +46,7 @@ public final class KvSchema {
           .createWriterFunc(GenericParquetWriter::create)
           .setAll(Map.of(
               TableProperties.PARQUET_ROW_GROUP_SIZE_BYTES, Long.toString(rowGroupBytes),
-              TableProperties.PARQUET_COMPRESSION, "zstd"))
+              TableProperties.PARQUET_COMPRESSION, codec))
           .overwrite()
           .build();
       for (KeyValue kv : rows) {

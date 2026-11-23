@@ -58,4 +58,25 @@ class ComponentsTest {
     assertEquals(List.of(new KeyValue("a", 1, Entry.PUT, "1"), new KeyValue("a", 2, Entry.DELETE, null)),
         WriteAheadLog.replay(p));
   }
+
+  @Test
+  void keyIndexFindsEveryKeyAndRejectsMostAbsentOnes() {
+    int n = 20_000;
+    String[] keys = new String[n];
+    int[] blockOf = new int[n];
+    int[] rowOf = new int[n];
+    for (int i = 0; i < n; i++) {
+      keys[i] = String.format("user%08d", i * 3);
+      blockOf[i] = i / 100;
+      rowOf[i] = i % 100;
+    }
+    KeyIndex idx = KeyIndex.fromBytes(KeyIndex.build(keys, blockOf, rowOf).toBytes());
+    for (int i = 0; i < n; i++) {
+      int want = i;
+      assertTrue(idx.find(keys[i], (b, r) -> b == blockOf[want] && r == rowOf[want]), keys[i]);
+    }
+    int falseHits = 0;
+    for (int i = 0; i < n; i++) if (idx.mayContain(String.format("user%08dx", i))) falseHits++;
+    assertTrue(falseHits < 5, "fingerprint collisions: " + falseHits);
+  }
 }

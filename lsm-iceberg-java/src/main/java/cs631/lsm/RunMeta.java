@@ -4,6 +4,7 @@ package cs631.lsm;
 public record RunMeta(
     long runId,
     int level,
+    String format,
     String dataFile,
     String indexFile,
     String minKey,
@@ -12,5 +13,5 @@ public record RunMeta(
     long maxSeq,
     long recordCount,
     long tombstones,
-    int rowGroups,
+    int blocks,
     long fileSize) {}

@@ -1,0 +1,21 @@
+{
+  "snapshot_before_merge" : 319202926907838373,
+  "files_before_merge" : 23,
+  "writes_per_s" : 75516,
+  "lookup_ms_before_merge" : {
+    "p95" : 0.211,
+    "p50" : 0.176
+  },
+  "iceberg_files_planned_before_merge" : 19,
+  "merge_seconds" : 0.406659917,
+  "versions_dropped" : 174884,
+  "tombstones_dropped" : 1001,
+  "snapshot_after_merge" : 7856898602644858293,
+  "files_after_merge" : 5,
+  "lookup_ms_after_merge" : {
+    "p95" : 0.167,
+    "p50" : 0.15
+  },
+  "iceberg_files_planned_after_merge" : 1,
+  "example_customer" : "cust00012345"
+}

@@ -63,14 +63,14 @@ public class InspectMetadata {
           for (DataFile df : r) {
             String lo = Conversions.fromByteBuffer(Types.StringType.get(), df.lowerBounds().get(1)).toString();
             String hi = Conversions.fromByteBuffer(Types.StringType.get(), df.upperBounds().get(1)).toString();
-            System.out.printf("      DATA FILE %-24s rows=%-6d key min/max=[%s, %s]%n", file(df.location()), df.recordCount(), lo, hi);
+            System.out.printf("      DATA FILE %-26s %-7s rows=%-6d key min/max=[%s, %s]%n", file(df.location()), df.format(), df.recordCount(), lo, hi);
           }
         }
       }
       StatisticsFile st = stats.get(s.snapshotId());
       if (st != null) {
         System.out.println("    PUFFIN INDEX " + file(st.path()) + " (" + st.fileSizeInBytes() + " bytes)");
-        st.blobMetadata().forEach(b -> System.out.println("      blob " + b.type() + " on field ids " + b.fields()));
+        st.blobMetadata().forEach(b -> System.out.println("      blob " + b.type() + " for run " + b.properties().get("run-id") + " on field ids " + b.fields()));
       }
     }
   }
