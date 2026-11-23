@@ -2,9 +2,9 @@
   "rows_now" : 48999,
   "rows_before_merge" : 224884,
   "live_customers" : 48999,
-  "analytics_query_s" : 0.3,
+  "analytics_query_s" : 0.24,
   "files_planned_before_merge" : 19,
   "files_planned_after_merge" : 1,
-  "lookup_s_before_merge" : 0.071,
-  "lookup_s_after_merge" : 0.034
+  "lookup_s_before_merge" : 0.069,
+  "lookup_s_after_merge" : 0.03
 }

@@ -23,12 +23,10 @@ ev = load("evaluation.json")
 uc = load("usecase.json") or {}
 sp = load("spark.json") or {}
 
-LSM = ["lsm", "lsm-parquet", "lsm-fence", "lsm-nocompact"]
+LSM = ["lsm", "lsm-nocompact"]
 BASE = ["append", "mor", "cow"]
 NAMES = {
     "lsm": "LSM (ours)",
-    "lsm-parquet": "LSM, Parquet runs",
-    "lsm-fence": "LSM, fence pointers",
     "lsm-nocompact": "LSM, no merges",
     "append": "Iceberg append",
     "mor": "Iceberg merge-on-read",
@@ -162,18 +160,6 @@ def ratio(a, b):
 
 
 abl = []
-if "lsm-parquet" in ev:
-    p = ev["lsm-parquet"]
-    abl.append(["Avro runs instead of Parquet (professor's suggestion)",
-                f'lookup {fmt(p["get_p50_ms"])} → {fmt(L["get_p50_ms"])} ms; YCSB-C {fmt(p["ycsb_ops_per_s"]["C"])} → {fmt(L["ycsb_ops_per_s"]["C"])} ops/s',
-                f'files {ratio(L["table_bytes_live"], p["table_bytes_live"]):.1f}× bigger (no compression)'])
-if "lsm-fence" in ev:
-    f = ev["lsm-fence"]
-    abl.append(["Key index in Puffin instead of fence pointers + binary search",
-                f'YCSB-B {fmt(f["ycsb_ops_per_s"]["B"])} → {fmt(L["ycsb_ops_per_s"]["B"])}, YCSB-C {fmt(f["ycsb_ops_per_s"]["C"])} → {fmt(L["ycsb_ops_per_s"]["C"])} ops/s; '
-                f'wasted block reads (bloom false positives) {f.get("bloom_false_positive_block_reads", 0)} → 0; median lookup the same within noise '
-                f'({fmt(f["get_p50_ms"])} vs {fmt(L["get_p50_ms"])} ms), since one block read costs far more than a binary search',
-                f'12 bytes per hash slot (about 17 bytes per key) in Puffin and in memory; all indexes of this table: {L["index_bytes"] / 1e6:.1f} MB'])
 if "lsm-nocompact" in ev:
     n = ev["lsm-nocompact"]
     abl.append(["Leveled merges (compaction) vs none",
@@ -218,6 +204,7 @@ HTML = f"""<!doctype html>
   .sw {{ display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }}
   .legend {{ font-size: 9pt; color: var(--ink2); margin: 4px 0; }}
   .key {{ background: #f1f5fb; border-left: 3px solid var(--blue); padding: 6px 10px; margin: 8px 0; break-inside: avoid; }}
+  .repo {{ font-size: 11pt; margin: 6px 0 8px; }} .repo a {{ color: var(--blue); }}
   .two {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }}
   .arch {{ font-family: Menlo, monospace; font-size: 8pt; line-height: 1.35; background: #f7f7f5; padding: 8px 10px; white-space: pre; break-inside: avoid; }}
 </style></head><body>
@@ -226,6 +213,7 @@ HTML = f"""<!doctype html>
 <div class="sub">CS631 course project, final report</div>
 <table class="team" style="width:auto"><tr><td>Shiv Narang</td><td>23b1075</td></tr>
 <tr><td>Kaushal Vijayvergiya</td><td>23b0901</td></tr><tr><td>Kritin Gupta</td><td>23b0948</td></tr></table>
+<p class="repo"><b>Code:</b> <a href="https://github.com/shivNarang/cs631-lsm-iceberg">https://github.com/shivNarang/cs631-lsm-iceberg</a></p>
 
 <div class="key"><b>Summary.</b> We built a key-value table that writes through an LSM tree and stores every sorted run
 as an ordinary Iceberg data file in Avro, with a bloom filter and an exact key index in Iceberg's Puffin format.
@@ -259,7 +247,7 @@ get(key) ─► MemTable ─► L0 runs, newest first ─► one run per level  
   each block starts, so a lookup seeks straight to one block and decodes it in one pass. We also store key, seq and op
   bounds in the Iceberg metadata, which Iceberg's own Avro writer does not do, so other engines can prune our files.</li>
   <li><b>Puffin index.</b> Each run's Puffin file holds three blobs: a bloom filter (1% false positives), an exact
-  <b>key index</b> (open-addressing hash table: key fingerprint → block, row; 12 bytes per slot) and a block directory
+  <b>key index</b> (open-addressing hash table: key fingerprint → block, row; 12 bytes per slot, 17–34 bytes per key; {L["index_bytes"] / 1e6:.1f} MB for all runs of this table) and a block directory
   (first key, offset and row count of each block, for range scans). The Puffin file is attached to the run's snapshot
   with <code>updateStatistics()</code>. If it is lost, the index is rebuilt from the data file.</li>
   <li><b>Read path.</b> Memtable, then L0 runs newest first, then at most one run per deeper level (their key ranges don't
@@ -278,8 +266,8 @@ table properties, snapshot summaries, Puffin and statistics files. About 3,400 l
 
 <h2>3. Changes after the checkpoint feedback</h2>
 {table([
-    ["Use Avro instead of Parquet (less decoding overhead)", "Runs are Avro by default; Parquet kept as an option so we could measure both."],
-    ["Store a real index in Puffin instead of fence pointers + binary search", "New key-index blob: key → (block, row) hash table. Fence-pointer mode kept for comparison."],
+    ["Use Avro instead of Parquet (less decoding overhead)", "Runs are written as Avro files, with blocks we can seek to directly."],
+    ["Store a real index in Puffin instead of fence pointers + binary search", "New key-index blob in Puffin: a key → (block, row) hash table, so a lookup reads exactly one block."],
     ["Implement merging", "Leveled compaction with Iceberg rewrite commits, tombstone and old-version cleanup."],
     ["Finish the project", "Three Iceberg baselines, YCSB workloads, full evaluation below."],
     ["Show it working with another system (Spark)", "Spark 3.5 reads the table through the official Iceberg runtime: analytics, metadata tables, time travel (Section 5)."],
@@ -290,7 +278,7 @@ table properties, snapshot summaries, Puffin and statistics files. About 3,400 l
 commits a file every {int(cfg['batch']):,} writes, as a streaming job would. Lookups: {cfg['lookups']} keys, 80% existing (hot keys
 more likely), 20% never written. Block cache off. MacBook Air, local SSD, one JVM; slow tables stop a phase after
 {cfg['time-limit']} s and report what they finished. The <span class="sw" style="background:{BLUE}"></span>blue bars are our LSM
-table and variants, the <span class="sw" style="background:{ORANGE}"></span>orange bars are plain Iceberg.</p>
+table (with and without merges), the <span class="sw" style="background:{ORANGE}"></span>orange bars are plain Iceberg.</p>
 <ul>
   <li><b>Iceberg append</b>: append each batch as a Parquet file; readers keep the newest version of each key.</li>
   <li><b>Iceberg merge-on-read</b>: each batch adds a data file and an equality-delete file on <code>key</code> (Flink upsert mode).</li>
@@ -308,7 +296,7 @@ column also reflects compression. The WAL is not counted. "Answers differ" compa
 <p class="cap">Each workload runs up to {int(cfg['ycsb-ops']):,} operations (or {cfg['time-limit']} s), and the final flush that makes its writes durable is included.</p>
 {curve_chart()}
 
-<h3>What each design choice buys (ablations)</h3>
+<h3>What merging buys (ablation)</h3>
 {table(abl, ["Change", "Effect on reads", "Cost"], numeric=False)}
 <p><b>Reading the results.</b> Lookups in plain Iceberg get slower as files pile up, because every file's key range
 covers every key. Merge-on-read is the slowest reader, because every lookup also opens the delete files.
@@ -364,7 +352,16 @@ key → row index and leveled merges, working on the unmodified format.</p>
   <li>Measured on a laptop with a local disk, not on object storage.</li>
 </ul>
 
-<h2>8. How to run</h2>
+<h2>8. Use of AI</h2>
+<p><b>Our work.</b> The idea and the design are ours. As a team we discussed the problem and decided how to build the
+LSM tree on Iceberg: storing runs as Iceberg data files, keeping the index in Puffin, committing flushes and merges as
+Iceberg snapshots, the leveled merge policy, the baselines to compare against and the Spark use case. We split this into
+features and worked through them one at a time.</p>
+<p><b>AI's work.</b> We used an AI coding assistant to write the code. For each feature we gave it a prompt such as
+"implement this feature" with our design for it, then ran the code, checked the output and asked for changes until it
+worked as we intended. The assistant also helped draft the text of this report from our results.</p>
+
+<h2>9. How to run</h2>
 <pre>cd lsm-iceberg-java
 ./run.sh test        # 19 tests
 ./run.sh demo        # write path, traced lookups, merge, crash recovery

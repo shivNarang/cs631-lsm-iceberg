@@ -3,9 +3,9 @@ package cs631.lsm;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** LRU cache of decoded Parquet row groups, keyed by (runId, rowGroup). */
+/** LRU cache of decoded blocks (an Avro block or a Parquet row group), keyed by (runId, block). */
 public class BlockCache {
-  /** A decoded row group: parallel arrays sorted by key. */
+  /** A decoded block: parallel arrays sorted by key. */
   public record Block(String[] keys, long[] seqs, byte[] ops, String[] values) {}
 
   private record Key(long runId, int rowGroup) {}
